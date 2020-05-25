@@ -23,6 +23,7 @@ import static FirstPackage.StaticImportTest.*;
             Example: two static imports, with class names Apple & Banana, with the same method called "foo()"
             If we write foo() in our code, then the compiler can't tell what foo() we want to use.
             We will be forced to say, Apple.foo(), or Banana.foo() if we still want to do static import.
+
  */
 
 public class StaticImporter {

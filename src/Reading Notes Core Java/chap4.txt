@@ -1,0 +1,50 @@
+- java has no concept of destructors since there is the auto garbage collector for memory
+    * it cleans up when an object is no longer in use. (no more references)
+    * however, you can still explictly suggest to the collector to clean up things for you
+    using the finalize() method for your classes. However, do not rely on this since it doesn't
+    make any promises as to when resources will get cleaned up. just that it will.
+
+- You can initalizes fields in class (besides through a constructor or usual means) through
+block initializers
+    * These are basically arbitary blocks of code enclosed with {}
+    * these should only used after the definition of the fields, and typically used for more complex
+        needs for initialization.
+    * use sparingly since it does make code harder to read
+    * static block initializers (prefixed with static before {}) are run only once for the first instance
+    of the given class. Could be useful for setting things like a seed for a class or something.
+    * object block initializers (without static prefix) are run at every new instance of the class.
+
+- classes that are within the same package are visible to each other.
+    * When importing classes from another package, just use import
+    * when you want to only import static methods and variables from another class AND not wanting to use
+    the class name explictly during calls or usage, use static imports
+
+- Compiler doesn't check for directory structure when compiling. This applies to when your code
+is trying to import from another package, but that package isn't at where it typically would be under.
+The JVM would search and fail at runtime (could be caught at compiling if the code depended on other packages)
+(not too exactly sure on the situation).
+
+- By default, if something doesn't have public or private access modifiers on variables or methods,
+they are package-visible. Meaning any other classes within the same package can see them.
+This would also mean variables are package-visible, even if they are intended for private (if not explictly indicate)
+HOWEVER, this doesn't mean other package could see it?
+
+- The path of the class must match the package name. Most if not all packages should be under src/....
+of where the JVM is running. or whatever the base directory is of the package tree.
+
+JAR = Java archive file. It contains multiple java class files and subdirectories in compressed format
+class path = the collection of all locations that can contain class files. Basically, telling JVM where
+to look for class files. (think of the normal PATH)
+
+Java compiler notes
+The Java compiler locates the class files of things that don't have package names to them by tracing
+the imports first, then going through all the paths in class path. Then it looks through the source files
+of what it found and recompiles the source file if it happens to be newer.
+* compiler searches through al source files of the current package to see which file defines the class.
+* since most of the time the source file name matches the name of the public class in the file, it should be easy
+Note: you can name classes to not match the name of the file if its a private class.
+
+- javadoc is a built in util that lets you generate html documentation for your code
+its extracts info from your source code based on certain things on how you comment your code
+* this lets your code be your documentation.
+
