@@ -1,0 +1,158 @@
+dynamic binding allows the JVM to determine what methods to call based on the implict parameter
+of the method (the object of which we are applying the method on).
+Example, obj1.add(), obj1 would be the implict parameter of add()
+* JVM does this by having its table of methods to look and choose what is the correct method to call
+based on the parameters given and its known signatures
+
+static binding is when the compiler has enough information on the method to just shove the method
+code in. These methods are usually private, static, final, or constructors.
+
+overloading resolution: compiler looks through the signatures of a particualr method and selects the correct one.
+
+General process that goes down when method is applied to object
+1.) compiler looks at the declared type and method
+2.) does overloading resolution
+3.) does binding, static or dynamic
+Dynamic is done during runtime since the JVM has to figure out what the actual type of the object is
+, this is what allows for polymorphism.
+
+protected
+* protected fields are visible to subclasses of a super classes
+* it also allows a method to get access to fields in the super class, while blocking off access
+from other classes.
+Note however: any class that is a subclass could see the protected field.
+And in java, any classes that are in the same package can also see protected fields. So it is
+not recommended in using protected things when not necessary.
+
+All classes inherit from the Object class which has methods that all classes inherit
+like toString(), etc.
+* This general super root class also allows Java to have methods and mechanism that are based on more generic
+types
+* Example, having varied arguments, You can pass in and array of Objects ( which is basically
+a way of saying an array of anything) since any Class type can be casted (upcasted) into Object type
+
+To prevent inheritance or the creation of a subclass. you can make the class "final", and methods also "final"
+to prevent overriding in the subclass.
+Overriding = a subclass redefining a method that it inherited from the superclass.
+( the method must have the same method signature, I.E, same parameters, and return type , and name)
+
+Every object inherits equals() to test for equality.
+Since java has Object variables (variables that refer to objects on the heap) and pass by value,
+the == operator is not enough to do equality check. == would only check if two things refer to the same
+object rather if the objects are actually of the same state or content.
+* Ex, objects A and B are referring to two disinct objects on the heap, meaning "new" is used.
+A == B would always yield false, since A and B aren't referring to the same object.
+In C, this would be like they aren't pointing to the same thing.
+
+Java requires that equals() should have 5 properties
+1.) It is reflexive. Meaning any equality checks on the same exact thing is true.
+Or other words, checking if you yourself is the same as yourself
+I.E, x.equals(x)
+
+2.) It is symmetric. x.equals(y) yields the same result as y.equals(x)
+which makes sense since if they are equal, then the order shouldn't matter.
+
+3.) It is transitive. means if a.equals(b) == true, b.equals(c) == true,
+then a.equals(c) should also be true, for any reference to objects
+
+4.) It is consistent. Repeated calls shouldn't change the result
+Example, If x and y never changed its references and the contents
+of those objects never changed, then x.equals(y) should always yield the same answer
+
+5.) For any non null reference x, x.equals(null) returns false.
+makes sense since there is no reason for that to be true
+
+ArrayList = generic vector from C++
+* Typed ArrayList = you giving it a type that the arraylist is expected to old
+* Raw ArrayList = not given type, things are default casted to Object type, which is dangerous in
+most cases since 1.) compiler can't do any error checks for you.
+2.) dangerous in cases or not careful
+Use Typed for safety.
+Note: the compiler does the check, but still ends up converting whatever the type of the arraylist is
+into an arraylist of Object when it translates the code to bytecode. This was to avoid drastic
+changes to how the JVM works.
+
+All primative types, like int, float, double, etc have wrapper classes that are also immutable,
+but allows us to have more functionality and pass in primitives that look like a class to things that
+require a class or object.
+Like with ArrayList<Integer>, allows us to have an array list of integers, but we can't say int
+since that is a primitve type, while Integer is a wrapped class.
+* note: the compiler does autoboxing, which is essentially translating or inserting code
+for us. This allows us to treat the wrapped primitive classes as if they were still primitives, but not.
+Example, ArrayList<Integer> list;
+"list.add(3)" would actually be "list.add(Integer.valueOf(3));"
+or "int n = list.get(i)" would be "int n = list.get(i).intValue();"
+
+It lets us shorted our code. But do note, you should still use equals() with these wrapped classes.
+
+Variable parameter args
+use the "<type>... <var_name>" syntax
+The method would have access to the variable parameter as an array with the parameter type.
+Example:
+public static double max(double... values)
+{
+    values would be an array of doubles. You could also just passed in an array of doubles directly
+    rather than doing it separately.
+}
+usage example:
+max(1.2,2.3,3.4) vs max(new double[] {1.2,2.3,3.4}) has the same meaning.
+
+Enumerations are actually implemented as classes.
+* each enumeration declaration is an instance of the enum class
+Example, public enum Size { SMALL, MEDIUM, LARGE }
+Is actually, Size.SMALL, Size.MEDIUM, Size.LARGE, but note, you dont need to use equals()
+since all references are the same and you can't make new instances of enum classes.
+* you can add more methods for enumerators.
+example code:
+public enum Size
+{
+    // initing the instances (i think)
+    SMALL("S"), MEDIUM("M"), LARGE("L"), EXTRA_LARGE("XL");
+
+    private String abbreviations;
+
+    private Size(String abbreviation) {this.abbrevation = abbreviation;}
+    public String getAbbreviations() {return abbreviation;}
+}
+
+Reflection (code that is handled at runtime)
+* Reflection is a mechanism that allows you to get information about a class through code,
+things about the fields, the methods, the constructor, class name, etc.
+* Reflection is a powerful thing that can be used to create java tools that add functionality to the language
+* it also allows us to create generic algorithms since we can based things off an objects type
+or fields.
+* Not recommended to be using this as a way for having generic methods for people to use.
+Usually better to use Interfaces
+* You can also use reflection as a way to minic a function pointers, since you can get info about
+a method from a class and then invoke it. (assuming you passed in something that has that method
+you are looking for). Java heavily discourages funciton pointers to begin wtih since it is seen
+as error prone and can break easily since you might pass in wrong parameters for whatever you passing.
+
+JVM runtime environment mains runtimet type identification on all objects, which is used to keep track of
+what class every object belongs to.
+We can access this information through a special type of class called "Class", which has methods
+that let us see information about different classes. usually we have to apply these methods on an object
+that we are interested in.
+
+Design hints for inheritance
+1.) Place common operations and fields in the superclass.
+2.) Don't use protected fields
+doesn't really give enough protection to warrant giving a subclass access to fields
+3.) use inheritance to model a "is-a" relationship
+is-a relationship allows us to make sure the methods that get inherited to a subclass actually makes sense
+Also saves us code since it reduces complexity.
+4.) Don't use inheritance unless all inherited methods make sense
+5.) Don't change the expected behavior of overrided methods
+This avoid breaking code that is using polymorphism, (substition principle)
+If behavior changes, then things can go wrong and break.
+6.) Use polymorphism, not type information
+Don't perform action based on the type of the object, take advantage of polymorphism to reduce
+complexity and makes code more maintable.
+7.) Don't overuse reflection.
+Reflection is powerful but fragile. Compiler also can't do any error checking for you
+and any errors will show up at runtime.
+
+Unrelated Note:
+When you compile one java file (say one with main), it will do chain compilation / separate compilation
+based on a sort of branching out fashion on what the classes are needed and what those classes need.
+and compiling each of those files as needed.
