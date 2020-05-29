@@ -20,6 +20,8 @@ protected
 * protected fields are visible to subclasses of a super classes
 * it also allows a method to get access to fields in the super class, while blocking off access
 from other classes.
+* Subtle rule: methods can only access protected fields of the same class.
+Example: if Manager is subclass of Employee, then Manager methods can only access the protected fields of Manager instances.
 Note however: any class that is a subclass could see the protected field.
 And in java, any classes that are in the same package can also see protected fields. So it is
 not recommended in using protected things when not necessary.

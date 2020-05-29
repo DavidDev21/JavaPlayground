@@ -1,0 +1,171 @@
+Interfaces describe a set of requirements for classes that want to implement or conform to the
+interface.
+* Any classes that implements an interface is guaranteed to have certain methods and
+fields that are required by the interface
+* You can not create an instance of an interface since it is not a class
+* All methods described in the interface are public by default so you dont need to say explictly
+* Note, interfaces do not provide the definition or implementation of said methods,
+they simply provide the signature and leave implementation to the classes that wants to
+conform to the interface
+* This also acts a clean way for the compiler to make sure that objects have certain methods
+when doing type checking for certain methods. Example, you have an interface called
+MyInterface with a method foo(). If you have a method that takes in an object of type
+MyInterface, you have guaranteeds about that method like what methods are there.
+(Objects can be casted to interfaces as long as they actually implement the interface)
+* a class can only inherit or extend to one class, but implement many interfaces
+* Intefaces can also have generic types. Example, Comparable<Integer>
+Note, that all generics are actually erased once we reached the bytecode, generics are just
+used by the compiler to do type checking. JVM has no knowledge and all generics just look like
+Object types or its raw version of class types. (idk, just JVM has no knowledge of generics).
+
+Interfaces can extend or inherit from other interfaces.
+* This allows you to build more specialized interfaces from a more generic one.
+* Fields in interfaces are automatically "public static final"
+
+Object cloning
+* default is shallow copy from the Object class' clone(), which is reasonable
+since the Object class knows nothing about the thing you are cloning, so the most it can do
+is just copy the references (if its not a primitive) or just copy the value if it is a primitive type
+
+To do deep copying, your class must implement the Cloneable interface
+and override the clone method
+1.) implement the Clonbeable interface
+2.) redefine the clone method with the public access modifer
+* the default clone() from Object, is "protected", which prevents subclasses of Object
+from calling the Object's clone() directly since protected methods can only have access to
+fields of instances of its own class.
+Note: Clonable interface doesn't actually have or require the clone(), its just tagging
+for the compiler to know that this class or object is cloneable and that you
+actually gave knowledge of how to clone this class.
+
+When doing deepcopy, you want to use the clone() of the mutable classes
+that are you are using for your class
+Example,
+
+public Employee clone() throws CloneNotSupportedException
+{
+    // use the clone from the object class or super class.
+    Employee cloned = (Employee) super.clone();
+    // clone mutable fields that are specific to this class
+    cloned.hireDay = (Date) hireDay.clone();
+
+    return cloned;
+}
+* some authors recommend avoiding using clone() and just make a method that
+does the same thing to avoid issues of cloning subclasses.
+Remember subclasses would also inherit the clone() from the parent class, which might
+not be enough for the subclass.
+
+Intefaces and callbacks
+* callback pattern = action that should occur whenever a particular event happens.
+In other languages you have callback functions that trigger for an event like a button click
+or timer.
+
+In java, instead of a callback function, you pass in an object that has the function you want to
+call for the event.
+The callback function is usually embedded in a class that implements an interface and then
+the object is casted to the interface which is later passed to the method that can follow
+the callback pattern.
+Example,
+
+class TimerPrinter implements ActionListener
+{
+    public void actionPerformed(ActionEvent event)
+    {
+    ...
+    }
+}
+
+Now we can pass in TimerPrinter as our callback object. In this case,
+actionPerformed() is usually called by whoever takes in an ActionListener object
+Usage example:
+
+ActionListerner listener = new TimePrinter();
+Timer t = new Timer(10000, listener); where Timer() takes in an ActionListener as 2nd parameter.
+
+Inner Classes = class that is defined inside another class
+Reasons for them
+1.) Inner class methods can access data from the scope in which they are defined, including
+private data. Basically, they have access to the outer class in which they are defined in
+2.) Inner classes are hidden from other classes in the same package
+3.) Anomoyous inner classes makes callbacks easier, They dont have have name
+
+An inner class method gets access to both its own data fields and those of the outer object
+creating it.
+When an inner class object is created, an implict parameter is given to the inner object's constructor
+that represents a reference to the outer class object.
+* in effect, when you are using a field that is part of the outer class directly, the compiler
+translates it to be referencing it.
+Example:
+ActionListener listener = new TimePrinter(); would be new TimePrinter(this) if
+TimePrinter was an inner class.
+* Only inner classes can be private
+* Syntax for outer class reference (from within inner class)
+is OuterClassName.this, basically the "this" field of the outer class is the reference to the
+outer class.
+* JVM has no knowledge of inner classes, but the compiler does add extra information
+that makes things look like inner classes when using reflection.
+Everything here is in the background.
+
+You can also have local inner classes, which are classes defined within a method.
+In this case, the scope is always within the method. No one can touch it.
+* local inner classes can access local variables of the method, but those must be declared as
+"final".
+    - The reasoning is that the instance of the inner class can outlive the method call itself
+    So the data that the inner class has shouldn't change for consistency.
+    - Inner classes usually can be used for callbacks, which can outlast the function that setup
+    the calls.
+    - Note: you could still get around this in a way by making a reference to an array or piece
+    of memory on the heap that is "final", but still change the data that a variable is
+    referring to.
+
+Anomoyous Inner Classes
+Syntax:
+new SuperType(constructor parameters)
+{
+    Inner class methods and data
+}
+
+We can make inner classes that either implements an Interfaces or extends a class
+(Depends on what the SuperType is.
+
+Example 1:
+ActionListener listener = new ActionListener()
+{
+    public void actionPerformed(ActionEvent event)
+    {
+        ...
+    }
+}
+
+// Normal person object
+Person queen = new Person("mary");
+// an object of an inner class that is extending person
+// Do note, it is still calling the constructor of the superclass, which would be the outer class
+here
+Person count = new Person("dracula") { ... };
+
+You can also use anomyous inner classes for writing shorter code to do things
+like initialize something you not going to have around for long. (double brace initialization)
+Example:
+ArrayList<String> friends = new ArrayList<>();
+favorites.add("Harry");
+favorites.add("Tony");
+invite(friends); // friends no longer needed
+
+Then, shorter code is:
+invite(new ArrayList<String>() {{ add("harry"); add("tony"); }});
+
+* What it is doing is creating an anomoyous inner class of ArrayList and then
+using an object construction block to add things into the arraylist as the object is being
+initialized.
+
+* anonomyous subclasses will fail equality tests
+
+* static inner classes are used when inner class doesn't need reference to outer class.
+This can be the case when a static method is using an inner class.
+* inner classes defined in interfaces are automatically static and public
+
+General note on proxies
+* these let you create new classes at runtime. Usually this is used for
+systems programming for creating tools.
