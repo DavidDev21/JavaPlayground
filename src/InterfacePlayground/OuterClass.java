@@ -61,9 +61,16 @@ public class OuterClass {
 
         // So local inners can still modify and access outerclass fields directly without trouble.
         LocalInner localTester = new LocalInner();
-
+        /*
+            Local inner classes still behave like normal inner classes with the exception that local inner classes
+            can't be access or seen by anyone outside of the method and that local inner methods that access
+            to local variables as long they are final (or you dont touch them in your inner method code).
+         */
         localTester.localInnerOne();
         localTester.localInnerTwo();
+        // testing what if a local variable that inner method has access to changes from underneath it.
+        // inputOne += 2; (compiler will complain right away)
+
 
         System.out.println("FIRST NUM: " + firstNum);
         System.out.println("SECOND NUM: " + secondNum);
@@ -91,6 +98,10 @@ public class OuterClass {
 
         // Okay so overriding from within the anomoyous inner class does work
         innerObjTester.OuterMethodThree();
+        /*
+            So in reality, we really can't do a lot with anomyous inner classes since they dont have name to begin with
+            They can be used for short implementation of interfaces like ActionListener or short easy initialization
+         */
     }
 
 }
